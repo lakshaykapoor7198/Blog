@@ -8,7 +8,7 @@ var session=require('express-session');
 var multer=require('multer');
 var ejs=require('ejs');
 var path=require('path');
-
+var dbpath = "mongodb://admin1:admin1@ds151070.mlab.com:51070/blog-mlab"
 app.set('port',process.env.PORT||3000);
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
@@ -73,7 +73,7 @@ app.locals.truncateText= function(text,length){
 }
 
 app.get('/',function(req,res){
-	MongoClient.connect('mongodb://localhost/nodeblog',function(err,db){
+	MongoClient.connect(dbpath,function(err,db){
 		var col=db.collection('posts');
 		col.find().limit(2000).toArray(function(error,posts){
 			res.render('index',{
@@ -84,7 +84,7 @@ app.get('/',function(req,res){
 	});
 });
 app.get('/posts/add',function(req,res){
-	MongoClient.connect('mongodb://localhost/nodeblog',function(err,db){
+	MongoClient.connect(dbpath,function(err,db){
 		var col=db.collection('categories');
 		col.distinct('title',function(error,posts){
 			res.render('post',{
@@ -123,7 +123,7 @@ app.post('/posts/add',function(req,res){
 	var errors=req.validationErrors();
 
 	if(errors){
-		MongoClient.connect('mongodb://localhost/nodeblog',function(err,db){
+		MongoClient.connect(dbpath,function(err,db){
 		var col=db.collection('posts');
 		col.distinct('category',function(error,posts){
 			res.render('post',{
@@ -145,7 +145,7 @@ app.post('/posts/add',function(req,res){
 			mainimage:mainImageName,
 		}
 
-		MongoClient.connect('mongodb://localhost/nodeblog',function(err,db){
+		MongoClient.connect(dbpath,function(err,db){
 			var col=db.collection('posts');
 			col.insert(newPost,function(error,data){
 				console.log('Data Inserted');
@@ -177,7 +177,7 @@ app.post('/categories/add',function(req,res){
 	}
 	else{
 
-		MongoClient.connect('mongodb://localhost/nodeblog',function(err,db){
+		MongoClient.connect(dbpath,function(err,db){
 			var col=db.collection('categories');
 			col.insert({title:title},function(error,data){
 				console.log('Data Inserted');
